@@ -1,0 +1,27 @@
+{
+  "icons": [{
+    "src": "favicon.png",
+    "sizes": "512x512",
+    "type": "image/png"
+  }],
+  "yandex": {
+    "splash_screen_color": "#080537",
+    "cache": {
+      "resources": [
+        "index.html",
+        "sw.js",
+        "pako_inflate.min.js",
+        "favicon.png",
+        "antipacman.wasm.gz",
+        "antipacman.pck.gz",
+        "antipacman.png",
+        "antipacman_bg.png",
+        "antipacman.wasm.gz",
+        "godot-loader.js",
+        "app-specific.js",
+        "yandex-games-godot.js",
+        "yandex-metrika.js"
+      ]
+    }
+  }
+}

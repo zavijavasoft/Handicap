@@ -37,4 +37,5 @@ Cargo.lock
 # End of https://www.toptal.com/developers/gitignore/api/rust,godot
 
 src/html5/godot-yandex-games/
+src3d/html5/godot-yandex-games/
 

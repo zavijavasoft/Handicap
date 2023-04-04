@@ -1,0 +1,25 @@
+{
+  "icons": [{
+    "src": "handicap.icon.png",
+    "sizes": "512x512",
+    "type": "image/png"
+  }],
+  "yandex": {
+    "splash_screen_color": "#080537",
+    "cache": {
+      "resources": [
+        "index.html",
+        "yandex-games-godot.js",
+        "yandex-metrika.js",
+        "app-specific.js",
+        "sw.js",
+        "handicap.wasm",
+        "handicap.pck",
+        "handicap.png",
+        "handicap.background_icon.png",
+        "handicap.icon.png",
+        "handicap.apple-touch-icon.png"
+      ]
+    }
+  }
+}
