@@ -8,6 +8,7 @@ const TrackExecutor = preload("res://TrackExecutor.gd")
 const HERO_X_POS = -0.5
 const FOE_X_POS = -0.5
 const SIDE_WIDTH = 2
+const FRAGMENT_COUNT = 10
 
 onready var wayFragments = [$FlatwayStart1, $FlatwayStart2, $FlatwayStart3, $FlatwayStart4]
 onready var hero = $Protagonist
@@ -41,9 +42,13 @@ func _physics_process(delta):
 	hero.allDistance = allDistance
 	for fragment in wayFragments:
 		fragment.translate(shift)
-	if wayFragments[0].translation.z < -20:
+	if wayFragments[0].translation.z < -20 and wayFragmentsUsed < FRAGMENT_COUNT:
 		wayFragmentsUsed += 1
-		var newWay = generator.create_new_way_fragment(wayFragments.back())
+		var finish = false
+		if wayFragmentsUsed == FRAGMENT_COUNT:
+			finish = true
+		var newWay = generator.create_new_way_fragment(wayFragments.back(), finish)
+
 		add_child(newWay)
 		wayFragments.append(newWay)
 		remove_child(wayFragments.front())
@@ -68,3 +73,11 @@ func _input(event):
 		keyboardMovePending = false
 	pass
 
+
+
+func _on_SwipeDetector_sig_swiped(direction):
+	match (direction):
+		0: hero.jump()
+		1: hero.move_right()
+		-1: hero.move_left()
+	pass # Replace with function body.
