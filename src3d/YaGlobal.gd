@@ -76,12 +76,12 @@ func setup_locale_externally(_lang):
 	pass
 
 func notify_yandex_sdk_loaded():
-	platformApi.get_stats("['best', 'score']")
 	AdvManager.showFullscreenAdv(self, "void_adv_callback")
 	platformApi.get_leaderboard_entries()
 	pass
 
 func void_adv_callback(_adv_result):
+	AdvManager.showBannerAdv()
 	pass
 
 func login_yandex_externally(playerName : String, _avatarUrl : String):

@@ -1,9 +1,17 @@
 "use strict";
-export const INTERNAL_APP_NAME : "Handlcap"
-export const YA_LOCAL_STORAGE_KEY_DATA :INTERNAL_APP_NAME + ".yagames.data";
-export const YA_LOCAL_STORAGE_KEY_NUMERIC :INTERNAL_APP_NAME + ".yagames.numeric.data";
-export const YA_PREMIUM_PURCHASE_ID :INTERNAL_APP_NAME + "_premium_account";
-export const LEADERBOARD_NAME :"BestResults";
+export const INTERNAL_APP_NAME = "Handlcap"
+export const YA_LOCAL_STORAGE_KEY_DATA  = INTERNAL_APP_NAME + ".yagames.data";
+export const YA_LOCAL_STORAGE_KEY_NUMERIC = INTERNAL_APP_NAME + ".yagames.numeric.data";
+export const YA_PREMIUM_PURCHASE_ID = INTERNAL_APP_NAME + "_premium_account";
+export const LEADERBOARD_NAME = "BestResults";
+
+export function createDefaultStatsData() {
+    return {
+        newKeys: {},
+        stats: {
+        }
+    }
+}
 
 export function createDefaultGameData() {
     return {
