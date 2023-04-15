@@ -9,6 +9,21 @@
 config_version=4
 
 _global_script_classes=[ {
+"base": "Container",
+"class": "BaseScene",
+"language": "GDScript",
+"path": "res://BaseScene.gd"
+}, {
+"base": "Spatial",
+"class": "Doll",
+"language": "GDScript",
+"path": "res://Doll.gd"
+}, {
+"base": "Spatial",
+"class": "Gate",
+"language": "GDScript",
+"path": "res://Gate.gd"
+}, {
 "base": "Spatial",
 "class": "Puppet",
 "language": "GDScript",
@@ -20,6 +35,9 @@ _global_script_classes=[ {
 "path": "res://TrackBase.gd"
 } ]
 _global_script_class_icons={
+"BaseScene": "",
+"Doll": "",
+"Gate": "",
 "Puppet": "res://icon.png",
 "TrackBase": ""
 }
@@ -27,22 +45,26 @@ _global_script_class_icons={
 [application]
 
 config/name="Handicap3D"
-run/main_scene="res://MainScene.tscn"
+run/main_scene="res://StartScene.tscn"
 config/icon="res://icon.png"
 
 [autoload]
 
+YaVersion="*res://html5/yandex-games/YaVersion.gd"
 PApi="*res://html5/godot-yandex-games/PlatformApi.gd"
 AdvManager="*res://html5/godot-yandex-games/AdvManager.gd"
 G="*res://YaGlobal.gd"
+NetManager="*res://NetworkManager.gd"
+SoundController="*res://SoundController.gd"
 
 [display]
 
 window/size/height=1920
 window/size/test_width=512
 window/size/test_height=960
-window/stretch/mode="2d"
-window/stretch/aspect="keep_width"
+window/handheld/orientation="portrait"
+window/stretch/mode="viewport"
+window/stretch/aspect="expand"
 
 [global]
 
@@ -55,6 +77,10 @@ common/drop_mouse_on_gui_input_disabled=true
 [input_devices]
 
 pointing/emulate_touch_from_mouse=true
+
+[locale]
+
+translations=PoolStringArray( "res://translations/translations.en.translation", "res://translations/translations.ru.translation", "res://translations/translations.csv" )
 
 [physics]
 

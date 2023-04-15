@@ -1,0 +1,13 @@
+id,ru,en
+ID_NONE,,
+start_run,Начать забег,Start race
+looking_for,Подбор соперника,Looking for an opponent
+take_revenge,Взять реванш,Take revenge
+change_foe,Сменить противника,Change the opponent
+next_route,Сменить трассу,Next route
+exit_track,Покинуть трассу,Leave the route
+lang,Рус,Eng
+win,Победа!,Won!
+loose,Поражение!,Defeat!
+tie,Ничья!,Tie!
+restart_track,Повторный забег,Re-run

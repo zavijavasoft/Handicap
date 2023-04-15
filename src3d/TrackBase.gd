@@ -7,20 +7,24 @@ const ACTION_JUMP = "jump"
 const ACTION_DIE = "die"
 const ACTION_FINISH = "finish"
 const ACTION_SCORE = "score"
+const ACTION_MULTI = "multi"
+const ACTION_REBORN = "reborn"
+const ACTION_RESPAWN = "respawn"
+const ACTION_PICKUP_ITEM = "pickup_item"
 
 const DEBUG_TRACK = """
 [
 {
 	"action": "move_left",
-	"timestamp": 30,
+	"timestamp": 10,
 },
 {
 	"action": "jump",
-	"timestamp": 32,
+	"timestamp": 12,
 },
 {
 	"action": "move_right",
-	"timestamp": 34,
+	"timestamp": 14,
 }
 ]
 """

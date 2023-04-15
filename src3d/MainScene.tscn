@@ -1,9 +1,19 @@
-[gd_scene load_steps=7 format=2]
+[gd_scene load_steps=19 format=2]
 
 [ext_resource path="res://SwipeDetector.tscn" type="PackedScene" id=1]
-[ext_resource path="res://Protagonist.tscn" type="PackedScene" id=2]
+[ext_resource path="res://ScoreLineFlat.tscn" type="PackedScene" id=2]
 [ext_resource path="res://Flatway.tscn" type="PackedScene" id=3]
 [ext_resource path="res://MainScene.gd" type="Script" id=4]
+[ext_resource path="res://FinishCurtain.tscn" type="PackedScene" id=5]
+[ext_resource path="res://Protagonist.tscn" type="PackedScene" id=6]
+[ext_resource path="res://fonts/Montserrat-Bold.ttf" type="DynamicFontData" id=7]
+[ext_resource path="res://images/main_bg2.png" type="Texture" id=8]
+[ext_resource path="res://images/waiting_shadow.png" type="Texture" id=9]
+[ext_resource path="res://images/btn_pause_any.png" type="Texture" id=10]
+[ext_resource path="res://images/btn_pause_hover.png" type="Texture" id=11]
+[ext_resource path="res://images/btn_sound_normal.png" type="Texture" id=12]
+[ext_resource path="res://images/btn_sound_pressed.png" type="Texture" id=13]
+[ext_resource path="res://fonts/Xolonium-Bold.otf" type="DynamicFontData" id=14]
 
 [sub_resource type="ProceduralSky" id=3]
 sky_top_color = Color( 0.909804, 0.67451, 0.54902, 1 )
@@ -13,7 +23,17 @@ sky_horizon_color = Color( 0.0196078, 0.815686, 0.760784, 1 )
 background_mode = 2
 background_sky = SubResource( 3 )
 
-[node name="MainScene" type="Spatial"]
+[sub_resource type="DynamicFont" id=4]
+size = 450
+outline_size = 3
+font_data = ExtResource( 14 )
+
+[sub_resource type="DynamicFont" id=5]
+size = 70
+font_data = ExtResource( 7 )
+
+[node name="MainScene" type="Container"]
+rect_min_size = Vector2( 512, 960 )
 script = ExtResource( 4 )
 
 [node name="SwipeDetector" parent="." instance=ExtResource( 1 )]
@@ -21,26 +41,109 @@ script = ExtResource( 4 )
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource( 2 )
 
-[node name="FlatwayStart1" parent="." instance=ExtResource( 3 )]
+[node name="FlatwayStart" parent="." instance=ExtResource( 3 )]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 7 )
 
-[node name="FlatwayStart2" parent="." instance=ExtResource( 3 )]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 27 )
-
-[node name="FlatwayStart3" parent="." instance=ExtResource( 3 )]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 47 )
-
-[node name="FlatwayStart4" parent="." instance=ExtResource( 3 )]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 67 )
-
-[node name="Protagonist" parent="." instance=ExtResource( 2 )]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, 0, 0 )
-
-[node name="Foe" parent="." instance=ExtResource( 2 )]
+[node name="Foe" parent="." instance=ExtResource( 6 )]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 0, 0 )
 
+[node name="Protagonist" parent="." instance=ExtResource( 6 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, 0, 0.25 )
+
 [node name="Camera" type="Camera" parent="."]
-transform = Transform( -0.999372, 0.0177113, -0.030677, 0.00377277, 0.91432, 0.404976, 0.0352212, 0.404606, -0.913813, -0.5, 6.25382, -4.076 )
-fov = 80.0
+transform = Transform( -0.999372, 0.0177113, -0.030677, 0.00377277, 0.91432, 0.404976, 0.0352212, 0.404606, -0.913813, -0.5, 4.62754, -4.53554 )
+fov = 58.0
+
+[node name="ControlPanel" type="Control" parent="."]
+margin_right = 40.0
+margin_bottom = 40.0
+
+[node name="ButtonPause" type="TextureButton" parent="ControlPanel"]
+margin_left = 20.0
+margin_top = 20.0
+margin_right = 160.0
+margin_bottom = 160.0
+texture_normal = ExtResource( 10 )
+texture_pressed = ExtResource( 11 )
+
+[node name="ButtonSound" type="TextureButton" parent="ControlPanel"]
+margin_left = 20.0
+margin_top = 180.0
+margin_right = 160.0
+margin_bottom = 320.0
+toggle_mode = true
+texture_normal = ExtResource( 12 )
+texture_pressed = ExtResource( 13 )
+
+[node name="ScoreLineHero" parent="ControlPanel" instance=ExtResource( 2 )]
+
+[node name="ScoreLineFoe" parent="ControlPanel" instance=ExtResource( 2 )]
+margin_left = 1.0
+margin_top = 123.0
+margin_right = 1.0
+margin_bottom = 83.0
+isFoe = true
+
+[node name="CountDownLabel" type="Label" parent="ControlPanel"]
+margin_top = 400.0
+margin_right = 1024.0
+margin_bottom = 1200.0
+custom_colors/font_color = Color( 0.403922, 0.760784, 0.894118, 1 )
+custom_colors/font_outline_modulate = Color( 0.807843, 0.913725, 0.92549, 1 )
+custom_colors/font_color_shadow = Color( 0.2, 0.329412, 0.458824, 1 )
+custom_constants/shadow_offset_y = 12
+custom_constants/shadow_as_outline = 20
+custom_fonts/font = SubResource( 4 )
+text = "5"
+align = 1
+valign = 1
+
+[node name="FinishCurtain" parent="ControlPanel" instance=ExtResource( 5 )]
+visible = false
+
+[node name="WaitingCurtain" type="Control" parent="ControlPanel"]
+margin_right = 40.0
+margin_bottom = 40.0
+
+[node name="ColorRect" type="ColorRect" parent="ControlPanel/WaitingCurtain"]
+margin_left = -1408.0
+margin_right = 2432.0
+margin_bottom = 1976.0
+color = Color( 0, 0, 0, 1 )
+
+[node name="BkGnd" type="Sprite" parent="ControlPanel/WaitingCurtain"]
+scale = Vector2( 1.35547, 1.28646 )
+texture = ExtResource( 8 )
+centered = false
+
+[node name="Shadow" type="Sprite" parent="ControlPanel/WaitingCurtain"]
+position = Vector2( 522, 1589.75 )
+scale = Vector2( 1.1543, 1.17327 )
+texture = ExtResource( 9 )
+
+[node name="SelectorLabel" type="Label" parent="ControlPanel/WaitingCurtain"]
+margin_top = 1500.0
+margin_right = 1024.0
+margin_bottom = 1844.0
+custom_fonts/font = SubResource( 5 )
+text = "Подбор соперника"
+align = 1
+
+[node name="DotProgressLabel" type="Label" parent="ControlPanel/WaitingCurtain"]
+margin_top = 1541.0
+margin_right = 1024.0
+margin_bottom = 1885.0
+custom_fonts/font = SubResource( 5 )
+align = 1
+
+[node name="CountDownTimer" type="Timer" parent="."]
+
+[node name="WaitingTimer" type="Timer" parent="."]
+wait_time = 0.3
+autostart = true
 
 [connection signal="sig_swiped" from="SwipeDetector" to="." method="_on_SwipeDetector_sig_swiped"]
+[connection signal="pressed" from="ControlPanel/ButtonPause" to="." method="_on_ButtonPause_pressed"]
+[connection signal="toggled" from="ControlPanel/ButtonSound" to="." method="_on_ButtonSound_toggled"]
+[connection signal="timeout" from="CountDownTimer" to="." method="_on_CountDownTimer_timeout"]
+[connection signal="timeout" from="WaitingTimer" to="." method="_on_WaitingTimer_timeout"]

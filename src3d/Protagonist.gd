@@ -1,11 +1,23 @@
 extends Puppet
 
+signal sig_finished
+signal sig_scored(is_hero, score)
+signal sig_scored_multi(is_hero, score)
+
 const TrackRecorder = preload("res://TrackRecorder.gd")
+const Doll = preload("res://Doll.gd")
+const Gate = preload("res://Gate.gd")
+
+onready var timer = $Timer
+onready var nameLabel = $NameLabel
+
+var timerCount = 0
+
+var score_count : int = 0
 
 const SIDE_WIDTH = 2
 
-
-onready var player = $AnimationPlayer
+var character : Doll
 
 var jumpRatio = PI / 7.333333
 var jumpVelocity = Vector3.ZERO
@@ -19,30 +31,52 @@ var xPosition = FOE_X_POS
 
 var camera = null
 var runnerMode = RunnerMode.FOE
-
-var isJumping = false
-var isOverjumping = false
+var deathReason = 0
+var paused = false
 
 var allTime = 0
 var allDistance = 0
 
 var startJumpDistance = 0
 var startOverjumpDistance = 0
+var isInvulnerable = false
 
 var trackRecorder : TrackRecorder = null
 
 func _ready():
+	var CharacterSc = load(G.currentProtagonist)
+	character = CharacterSc.instance() as Doll
+	add_child(character)
+	character.connect("sig_finished", get_parent(), "_on_Level_Finished")
+	connect("sig_scored", get_parent(), "_on_Scored")
 	pass
 
-func start_record(mode):
+func zombify():
+	$AreaHero.collision_mask = 2
+	$AreaHero.collision_layer = 2
+	nameLabel.text = G.foeName
+	emit_signal("sig_scored", false, 0)
+	pass
+
+
+func set_runner_mode(mode):
+	emit_signal("sig_scored", true, 0)
+	nameLabel.text = G.userName
 	trackRecorder = TrackRecorder.new()
 	runnerMode = mode
 	if runnerMode == RunnerMode.SINGLE:
 		xPosition = SINGLE_X_POS
 	else:
 		xPosition = HERO_X_POS
+	translation.x = xPosition
+
+func start_record(mode):
+	allTime = 0
+
 
 func _physics_process(delta):
+	if paused:
+		return
 	allTime = allTime + delta
 	if movingRight:
 		if translation.x <= xPosition - SIDE_WIDTH:
@@ -75,15 +109,17 @@ func shift_camera(sideShift):
 	if camera != null:
 		camera.translate(sideShift)
 
+func run():
+	character.run()
+
 func jump():
-	if movingLeft or movingRight or isJumping:
+	if movingLeft or movingRight or character.isJumping:
 		return
 	if trackRecorder != null:
 		trackRecorder.jump(allTime)
 	startJumpDistance = allDistance
-	isJumping = true
 	movingUp = true
-	player.play("Overjumping")
+	character.jump()
 
 func move_left():
 	if movingRight or currentLine == 1:
@@ -103,22 +139,87 @@ func move_right():
 		trackRecorder.move_right(allTime)
 	pass
 
-func die():
+func die(reason):
 	if trackRecorder != null:
-		trackRecorder.die(allTime)
+		trackRecorder.die(allTime, reason)
+	deathReason = character.die(reason)
 
 func finish():
+	nameLabel.visible = false
 	if trackRecorder != null:
 		trackRecorder.finish(allTime)
 
-func score(value):
+func score(newValue):
+	var isHero = false
+	score_count = newValue
 	if trackRecorder != null:
-		trackRecorder.score(allTime, value)
+		isHero = true
+		trackRecorder.score(allTime, score_count)
+	emit_signal("sig_scored", isHero, score_count)
 
+func reborn():
+	if trackRecorder != null:
+		trackRecorder.reborn(allTime)
+	character.reborn()
+	timer.start()
+	isInvulnerable = true
+	
+func respawn():
+	if trackRecorder != null:
+		trackRecorder.respawn(allTime)
+	character.respawn()
+		
 
 func get_track():
 	return trackRecorder.get_track()
 
-func _on_AnimationPlayer_animation_finished(anim_name):
-	player.play("Running")
-	isJumping = false
+func _on_AreaHero_area_entered(area):
+	if area.name == "FinishArea":
+		print("Finished!!!!")
+		if trackRecorder != null:
+			trackRecorder.finish(allTime)
+			get_parent().upload_track(trackRecorder.get_track())
+			
+		character.isFinishing = true
+		nameLabel.visible = false
+	elif area.name in [ "PikeSetArea", "ColumnArea", "AbyssArea" ]:
+		if is_dead() or is_reborn() or isInvulnerable:
+			return
+		die(area.name)
+	elif area.name == "GateArea":
+		if is_dead() or is_reborn() or isInvulnerable:
+			return
+		var gate = area.get_parent()
+		gate.pickup()
+		var newValue = gate.change_score(score_count)
+		score(newValue)
+	elif area.name == "CounterArea":
+		if is_dead() or is_reborn() or isInvulnerable:
+			return
+		var increment = area.get_parent().pickup()
+		if trackRecorder != null:
+			score(increment + score_count)
+		pass
+	
+	pass # Replace with function body.
+
+func is_stopped():
+	return character.isStopped
+	
+func is_dead():
+	return character.isDead
+
+func is_reborn():
+	return character.isReborn
+
+
+func _on_Timer_timeout():
+	timerCount += 1
+	if timerCount >= 25:
+		timerCount = 0
+		isInvulnerable = false
+		character.visible = true
+		timer.stop()
+		return
+	character.visible = !character.visible
+	pass # Replace with function body.

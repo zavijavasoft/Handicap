@@ -1,0 +1,23 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://models/animations/Protagonist/Protagonist.glb" type="PackedScene" id=1]
+[ext_resource path="res://Doll.gd" type="Script" id=2]
+
+[sub_resource type="CapsuleShape" id=1]
+radius = 0.680535
+height = 0.917543
+
+[node name="Sasha" instance=ExtResource( 1 )]
+script = ExtResource( 2 )
+
+[node name="AnimationPlayer" parent="." index="1"]
+autoplay = "Running"
+
+[node name="AreaBody" type="Area" parent="." index="2"]
+
+[node name="CollisionShape" type="CollisionShape" parent="AreaBody" index="0"]
+transform = Transform( 1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 1.02319, 0 )
+shape = SubResource( 1 )
+
+[connection signal="animation_finished" from="AnimationPlayer" to="." method="_on_AnimationPlayer_animation_finished"]
+[connection signal="area_entered" from="AreaBody" to="." method="_on_AreaBody_area_entered"]

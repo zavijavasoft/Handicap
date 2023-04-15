@@ -1,0 +1,105 @@
+[gd_scene load_steps=13 format=2]
+
+[ext_resource path="res://images/btn_reroll_normal.png" type="Texture" id=1]
+[ext_resource path="res://fonts/ButtonText.tres" type="DynamicFont" id=2]
+[ext_resource path="res://fonts/Xolonium-Bold.otf" type="DynamicFontData" id=3]
+[ext_resource path="res://images/buttons/btn_checkpoint_pressed.png" type="Texture" id=4]
+[ext_resource path="res://images/buttons/btn_checkpoint_normal.png" type="Texture" id=5]
+[ext_resource path="res://images/btn_quit_pressed.png" type="Texture" id=6]
+[ext_resource path="res://images/buttons/btn_defeat_pressed.png" type="Texture" id=7]
+[ext_resource path="res://images/btn_quit_normal.png" type="Texture" id=8]
+[ext_resource path="res://images/buttons/btn_defeat_normal.png" type="Texture" id=9]
+[ext_resource path="res://images/btn_reroll_pressed.png" type="Texture" id=10]
+[ext_resource path="res://FinishCurtain.gd" type="Script" id=11]
+
+[sub_resource type="DynamicFont" id=1]
+size = 100
+font_data = ExtResource( 3 )
+
+[node name="FinishCurtain" type="Control"]
+margin_right = 40.0
+margin_bottom = 40.0
+script = ExtResource( 11 )
+
+[node name="BkGnd" type="ColorRect" parent="."]
+margin_right = 1034.0
+margin_bottom = 1914.0
+color = Color( 0.670588, 0.592157, 0.321569, 0.192157 )
+
+[node name="ResultLabel" type="Label" parent="."]
+margin_top = 270.0
+margin_right = 1024.0
+margin_bottom = 382.0
+custom_fonts/font = SubResource( 1 )
+text = "Defeat!"
+align = 1
+valign = 1
+
+[node name="RestartButton" type="TextureButton" parent="."]
+margin_left = 150.0
+margin_top = 439.0
+margin_right = 732.0
+margin_bottom = 567.0
+texture_normal = ExtResource( 9 )
+texture_pressed = ExtResource( 7 )
+
+[node name="RestartLabel" type="Label" parent="RestartButton"]
+margin_left = 170.0
+margin_top = 30.0
+margin_right = 655.0
+margin_bottom = 109.0
+custom_fonts/font = ExtResource( 2 )
+text = "Взять реванш"
+
+[node name="ChangeFoeButton" type="TextureButton" parent="."]
+margin_left = 150.0
+margin_top = 599.0
+margin_right = 907.0
+margin_bottom = 727.0
+texture_normal = ExtResource( 1 )
+texture_pressed = ExtResource( 10 )
+
+[node name="ChangeFoeLabel" type="Label" parent="ChangeFoeButton"]
+margin_left = 170.0
+margin_top = 30.0
+margin_right = 725.0
+margin_bottom = 109.0
+custom_fonts/font = ExtResource( 2 )
+text = "Сменить противника"
+
+[node name="NextTrackButton" type="TextureButton" parent="."]
+margin_left = 150.0
+margin_top = 759.0
+margin_right = 278.0
+margin_bottom = 887.0
+texture_normal = ExtResource( 5 )
+texture_pressed = ExtResource( 4 )
+
+[node name="NextTrackLabel" type="Label" parent="NextTrackButton"]
+margin_left = 170.0
+margin_top = 30.0
+margin_right = 725.0
+margin_bottom = 109.0
+custom_fonts/font = ExtResource( 2 )
+text = "Сменить трассу"
+
+[node name="ExitButton" type="TextureButton" parent="."]
+margin_left = 150.0
+margin_top = 919.0
+margin_right = 278.0
+margin_bottom = 1047.0
+texture_normal = ExtResource( 8 )
+texture_pressed = ExtResource( 6 )
+
+[node name="ExitLabel" type="Label" parent="ExitButton"]
+margin_left = 170.0
+margin_top = 30.0
+margin_right = 725.0
+margin_bottom = 109.0
+custom_fonts/font = ExtResource( 2 )
+text = "Покинуть трассу"
+
+[connection signal="pressed" from="RestartButton" to="." method="_on_RestartButton_pressed"]
+[connection signal="pressed" from="ChangeFoeButton" to="." method="_on_ChangeFoeButton_pressed"]
+[connection signal="pressed" from="NextTrackButton" to="." method="_on_NextTrackButton_pressed"]
+[connection signal="pressed" from="ExitButton" to="." method="_on_ExitButton_pressed"]

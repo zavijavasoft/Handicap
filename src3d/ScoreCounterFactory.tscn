@@ -1,0 +1,90 @@
+[gd_scene load_steps=7 format=2]
+
+[ext_resource path="res://models/obstacles/Counter/counter.glb" type="PackedScene" id=1]
+[ext_resource path="res://fonts/Xolonium-Bold.otf" type="DynamicFontData" id=2]
+[ext_resource path="res://models/obstacles/Counter/counter-purple.png" type="Texture" id=3]
+
+[sub_resource type="GDScript" id=5]
+script/source = "extends Spatial
+
+const ScoreCounterSc = preload(\"res://ScoreCounter.tscn\")
+onready var viewport = $Viewport
+onready var label = $Viewport/Label
+onready var sprite = $Viewport/Sprite
+
+var textures = []
+var old_texture = null
+
+var loaded = false
+
+func _init():
+	textures.resize(100)
+
+
+func get_generated_texture():
+	return $Viewport.get_texture().duplicate()
+
+func reflect_values():
+	for i in range(100):
+		label.text = str(i)
+		
+#		while viewport.get_texture() == old_texture:
+		yield(get_tree(), \"idle_frame\")
+		var viewport_texture = viewport.get_texture()
+		
+		var image_texture = ImageTexture.new()
+		var image = Image.new()
+		image.create(200, 250, true, Image.FORMAT_RGBA8)
+		image.copy_from(viewport.get_texture().get_data())
+		image_texture.create_from_image(image)
+		textures[i] = image_texture
+		old_texture = viewport.get_texture()
+	loaded = true
+		
+
+func _ready():
+	old_texture = viewport.get_texture()
+	reflect_values()
+	pass
+
+func set_generated_texture(counter, value):
+	counter.set_generated_texture(textures[value])
+	pass
+
+"
+
+[sub_resource type="DynamicFont" id=3]
+size = 100
+font_data = ExtResource( 2 )
+
+[sub_resource type="BoxShape" id=4]
+
+[node name="ScoreCounterFactory" instance=ExtResource( 1 )]
+script = SubResource( 5 )
+
+[node name="Viewport" type="Viewport" parent="." index="1"]
+size = Vector2( 200, 250 )
+transparent_bg = true
+render_target_v_flip = true
+render_target_update_mode = 3
+
+[node name="Sprite" type="Sprite" parent="Viewport" index="0"]
+texture = ExtResource( 3 )
+centered = false
+
+[node name="Label" type="Label" parent="Viewport" index="1"]
+margin_right = 200.0
+margin_bottom = 240.0
+custom_fonts/font = SubResource( 3 )
+text = "99"
+align = 1
+valign = 1
+
+[node name="CounterArea" type="Area" parent="." index="2"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.205273, 0 )
+collision_layer = 2
+collision_mask = 3
+
+[node name="CollisionShape" type="CollisionShape" parent="CounterArea" index="0"]
+transform = Transform( 0.3, 0, 0, 0, 1, 0, 0, 0, 0.5, 0, 0, 0 )
+shape = SubResource( 4 )

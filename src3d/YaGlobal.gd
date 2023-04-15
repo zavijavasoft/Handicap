@@ -1,5 +1,7 @@
 extends Node
 
+const AppID = "Handicap v" + str(YaVersion.MAJOR) + "." + str(YaVersion.MINOR) + "." + str(YaVersion.RELEASE)
+
 signal sig_locale_changed
 signal sig_yandex_login
 signal sig_update_game_data
@@ -41,11 +43,28 @@ var achievePeaceMaker = false # for first 100 ties
 
 var userLoggedIn = false
 var userName = "incognito"
+var userUniqueId = ""
 var avatarUrl = ""
 var avatarImage = null
+var avatarHTTPRequest = null
 
 var currentScene = null
+var currentProtagonist = "res://Alyona.tscn"
 
+var currentSeed = 100
+var lastTrack = ""
+var foeName = "IUnknown"
+var foeRating = 1000
+var foeAvatarImage = null
+var foeTrack = ""
+var trackLoadingPending = false
+
+var languages = ["ru", "en"]
+
+func get_user_unique_id():
+	if userUniqueId.empty():
+		userUniqueId = Marshalls.utf8_to_base64(str(randi()))
+	return userUniqueId
 
 func _unhandled_key_input(event):
 	if PApi.is_yandex_games_platform():
@@ -54,6 +73,9 @@ func _unhandled_key_input(event):
 	pass
 
 func _init():
+	randomize()
+	rand_seed(OS.get_time().minute)
+	avatarHTTPRequest = HTTPRequest.new()
 	pass
 	
 
@@ -69,10 +91,20 @@ func _ready():
 	platformApi = PApi.platformApi
 	var root = get_tree().get_root()
 	currentScene = root.get_child(root.get_child_count() - 1)
+	add_child(avatarHTTPRequest)
+	avatarHTTPRequest.connect("request_completed", self, "_on_Avatar_request_completed")
 
+func notify_track_received():
+	pass
 
 func setup_locale_externally(_lang):
-#	emit_signal("sig_locale_changed")
+	language = _lang
+	if userSelectedLanguage != _lang and not userSelectedLanguage.empty():
+		language = userSelectedLanguage
+	TranslationServer.set_locale(language)
+	emit_signal("sig_locale_changed")
+	pass
+
 	pass
 
 func notify_yandex_sdk_loaded():
@@ -84,12 +116,24 @@ func void_adv_callback(_adv_result):
 	AdvManager.showBannerAdv()
 	pass
 
-func login_yandex_externally(playerName : String, _avatarUrl : String):
+func login_yandex_externally(playerName : String, _avatarUrl : String, uniqueId : String):
 	userLoggedIn = true
 	userName = playerName
+	userUniqueId = uniqueId
 	avatarUrl = _avatarUrl
-	emit_signal("sig_yandex_login", playerName, avatarUrl)
-	pass
+	
+	if not avatarUrl == null:
+		avatarHTTPRequest.request(avatarUrl, [], HTTPClient.METHOD_GET)
+	else:
+		emit_signal("sig_yandex_login")
+
+func _on_Avatar_request_completed(result, response_code, headers, body):
+	avatarImage = Image.new()
+	var image_error = avatarImage.load_jpg_from_buffer(body)
+	if image_error != OK:
+		avatarImage = null
+		print("An error occurred while trying to display the image.")
+	emit_signal("sig_yandex_login")
 
 func notify_update_game_data():
 	emit_signal("sig_update_game_data")
@@ -102,6 +146,11 @@ func switch_to_main_scene():
 	call_deferred("_deferred_switch_to_scene", "res://MainScene.tscn")
 	pass
 
+func switch_to_start_scene():
+	call_deferred("_deferred_switch_to_scene", "res://StartScene.tscn")
+	pass
+
+
 func _deferred_switch_to_scene(pathToScene : String):
 	currentScene.free()
 	var s = ResourceLoader.load(pathToScene)
@@ -111,7 +160,7 @@ func _deferred_switch_to_scene(pathToScene : String):
 	pass
 
 func save_game():
-	platformApi.save_game()
+	platformApi.save_game(serialize())
 	pass
 	
 func load_game():

@@ -71,9 +71,21 @@ func void_adv_callback(_adv_result):
 func login_yandex_externally(playerName : String, _avatarUrl : String):
 	userLoggedIn = true
 	userName = playerName
-	avatarUrl = _avatarUrl
-	emit_signal("sig_yandex_login", playerName, avatarUrl)
-	pass
+	
+	if not avatarUrl == null:
+		var http_client = HTTPClient.new()
+		http_client.connect("request_completed", self, "_on_Avatar_request_completed")
+		http_client.request("https://www.example.com", [], HTTPClient.METHOD_GET)
+	else:
+		emit_signal("sig_yandex_login")
+
+func _on_Avatar_request_completed(result, response_code, headers, body):
+	avatarImage = Image.new()
+	var image_error = avatarImage.load_jpg_from_buffer(body)
+	if image_error != OK:
+		avatarImage = null
+		print("An error occurred while trying to display the image.")
+	emit_signal("sig_yandex_login", userName, avatarUrl)
 
 func notify_update_game_data():
 	emit_signal("sig_update_game_data")

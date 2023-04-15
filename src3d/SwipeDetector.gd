@@ -33,8 +33,11 @@ func end_detection(position):
 				emit_signal("sig_swiped", 1)
 			else:
 				emit_signal("sig_swiped", -1)
-	else:
-		emit_signal("sig_swiped", 0)
+		else:
+			if dnormed.y < 0:
+				emit_signal("sig_swiped", 0)
+	#else:
+		#emit_signal("sig_swiped", 0)
 
 func _ready():
 	pass

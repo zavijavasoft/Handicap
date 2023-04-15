@@ -7,7 +7,7 @@ func add_no_param_action(action, time):
 		timestamp = time,
 		action = action
 	}
-	print("Action: ", chunk)
+	
 	actionList.append(chunk)
 
 func move_left(time):
@@ -22,9 +22,13 @@ func jump(time):
 	add_no_param_action(ACTION_JUMP, time)
 	pass
 	
-func die(time):
-	add_no_param_action(ACTION_DIE, time)
-	pass
+func die(time, reason):
+	var chunk = {
+		timestamp = time,
+		action = ACTION_DIE,
+		reason = reason
+	}
+	actionList.append(chunk)
 	
 func finish(time):
 	add_no_param_action(ACTION_FINISH, time)
@@ -38,5 +42,29 @@ func score(time, value):
 	}
 	actionList.append(chunk)
 
+func score_multiplier(time, value):
+	var chunk = {
+		timestamp = time,
+		action = ACTION_MULTI,
+		count = value
+	}
+	actionList.append(chunk)
+
+
+func pickup_item(time, item):
+	var chunk = {
+		timestamp = time,
+		action = ACTION_PICKUP_ITEM,
+		item = item
+	}
+	actionList.append(chunk)
+
+
+func reborn(time):
+	add_no_param_action(ACTION_REBORN, time)
+
+func respawn(time):
+	add_no_param_action(ACTION_RESPAWN, time)
+
 func get_track():
-	return to_json(actionList)
+	return actionList

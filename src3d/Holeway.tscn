@@ -1,0 +1,24 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://models/way_fragments/holeway.glb" type="PackedScene" id=1]
+[ext_resource path="res://Flatway.gd" type="Script" id=2]
+
+[sub_resource type="BoxShape" id=1]
+extents = Vector3( 1, 1, 0.621544 )
+
+[node name="holeway" instance=ExtResource( 1 )]
+script = ExtResource( 2 )
+
+[node name="FinishArea" type="Area" parent="." index="1"]
+
+[node name="CollisionShape" type="CollisionShape" parent="FinishArea" index="0"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -11, 0 )
+shape = SubResource( 1 )
+disabled = true
+
+[node name="AbyssArea" type="Area" parent="." index="2"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.702548, 1.46072 )
+
+[node name="CollisionShape" type="CollisionShape" parent="AbyssArea" index="0"]
+transform = Transform( 6, 0, 0, 0, 1, 0, 0, 0, 1, 0.26426, 0.714339, 1.34073 )
+shape = SubResource( 1 )

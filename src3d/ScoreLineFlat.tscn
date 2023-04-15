@@ -1,0 +1,60 @@
+[gd_scene load_steps=8 format=2]
+
+[ext_resource path="res://fonts/Xolonium-Bold.otf" type="DynamicFontData" id=1]
+[ext_resource path="res://images/incognito_avatar.png" type="Texture" id=2]
+[ext_resource path="res://fonts/Montserrat-Bold.ttf" type="DynamicFontData" id=3]
+[ext_resource path="res://images/white_avatar_mask.png" type="Texture" id=4]
+[ext_resource path="res://ScoreLineFlat.gd" type="Script" id=5]
+
+[sub_resource type="DynamicFont" id=2]
+size = 24
+font_data = ExtResource( 1 )
+
+[sub_resource type="DynamicFont" id=1]
+size = 64
+font_data = ExtResource( 3 )
+
+[node name="ScoreLineFlat" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_bottom = -1814.0
+script = ExtResource( 5 )
+
+[node name="BkGnd" type="ColorRect" parent="."]
+light_mask = 2
+margin_top = 10.0
+margin_right = 600.0
+margin_bottom = 90.0
+color = Color( 0.74902, 0.0392157, 0.188235, 1 )
+
+[node name="LabelName" type="Label" parent="."]
+margin_left = 14.0
+margin_top = 33.0
+margin_right = 223.0
+margin_bottom = 61.0
+custom_fonts/font = SubResource( 2 )
+text = "abracadabra"
+valign = 1
+clip_text = true
+
+[node name="LabelScore" type="Label" parent="."]
+margin_left = 356.0
+margin_top = 6.0
+margin_right = 602.0
+margin_bottom = 93.0
+custom_fonts/font = SubResource( 1 )
+text = "999999"
+align = 1
+valign = 1
+
+[node name="Avatar" type="Sprite" parent="."]
+position = Vector2( 286, 17 )
+texture = ExtResource( 2 )
+offset = Vector2( 0, 32 )
+
+[node name="Avamask" type="Light2D" parent="Avatar"]
+position = Vector2( 1, 32 )
+scale = Vector2( 0.5, 0.5 )
+texture = ExtResource( 4 )
+texture_scale = 2.2
+mode = 3
