@@ -27,19 +27,19 @@ func set_hero_name(newName):
 	heroName = newName
 	$LabelName.text = newName
 
-func update():
-	if G.avatarImage != null:
+func update_line():
+	var avatarImage = G.avatarImage
+	if isFoe:
+		avatarImage = G.foeAvatarImage
+	if avatarImage != null:
 		var texture = ImageTexture.new()
-		texture.create_from_image(G.avatarImage)
+		texture.create_from_image(avatarImage)
 		var texSize = texture.get_size()
-		var xRatio = 240 / texSize.x
-		var yRatio = 240 / texSize.y
-		print("Tex size: ", texSize, " ratios: ", Vector2(xRatio , yRatio))
 		avatar.texture = texture
-		avatar.set_scale(Vector2(xRatio, yRatio))
+		avatar.set_scale(Vector2(0.5, 0.5))
 
 func _ready():
-	update()
+	update_line()
 	
 	if isFoe:
 		$BkGnd.color = COLOR_RED

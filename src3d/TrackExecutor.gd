@@ -20,7 +20,6 @@ func fake_physics_process(delta):
 	if cursor < track.size():
 		var chunk = track[cursor]
 		if chunk.timestamp < allTime:
-			print("Action: ", chunk.action)
 			match chunk.action:
 				ACTION_SCORE:
 					foe.score(chunk.count)

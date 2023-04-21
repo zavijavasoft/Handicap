@@ -61,7 +61,7 @@ func create_new_holeway_fragment(lastWay):
 	newWay.obstaclesMap = newWay.obstaclesMapForHoleway
 	newWay.sequenceNumber = lastWay.sequenceNumber + 1
 	newWay.translation = Vector3(0, 0, lastWay.translation.z + 20)
-	generate_obstacles(newWay)
+#	generate_obstacles(newWay)
 	return newWay
 	pass
 
@@ -70,8 +70,8 @@ func create_new_flatway_fragment(lastWay, finish):
 	newWay.sequenceNumber = lastWay.sequenceNumber + 1
 	newWay.translation = Vector3(0, 0, lastWay.translation.z + 20)
 	newWay.override_material(randomGenerator.randi(), finish)
-	if not finish:
-		generate_obstacles(newWay)
+#	if not finish:
+#		generate_obstacles(newWay)
 	return newWay
 
 func create_rotor_obstacle(way, i, j):
@@ -159,7 +159,12 @@ func generate_guillotine(wayFragment):
 	pass
 	
 func generate_obstacles(wayFragment):
+	if wayFragment.hasObstacles or wayFragment.isFinish:
+		return
 	var mu = wayFragment.sequenceNumber
+	if mu < 2:
+		return
+	wayFragment.hasObstacles = true
 	var idx = 0
 	var rnd = get_normal_dist_seq(30, mu, 100)
 	if mu % 5 == 0:

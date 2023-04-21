@@ -7,6 +7,8 @@ export var sequenceNumber : int = 0
 
 var overriding_material = null
 var isFinish = false
+var hasObstacles = false
+
 
 var previousObstacleMask = ""
 var obstaclesMap = "*>+*>+*>+*>+*>+*>+*>+*>+*>+*>+"

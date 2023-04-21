@@ -1,6 +1,7 @@
 extends Container
 class_name BaseScene
 
+
 var minWindowHeight = 960
 var minWinwowWidth = 512
 

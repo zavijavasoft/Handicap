@@ -1,13 +1,16 @@
-id,ru,en
-ID_NONE,,
-start_run,Начать забег,Start race
-looking_for,Подбор соперника,Looking for an opponent
-take_revenge,Взять реванш,Take revenge
-change_foe,Сменить противника,Change the opponent
-next_route,Сменить трассу,Next route
-exit_track,Покинуть трассу,Leave the route
-lang,Рус,Eng
-win,Победа!,Won!
-loose,Поражение!,Defeat!
-tie,Ничья!,Tie!
-restart_track,Повторный забег,Re-run
+id,ru,en,tr
+ID_NONE,,,
+start_run,Начать забег,Start race,Yarışa başla
+looking_for,Подбор соперника,Looking for an opponent,Bir rakip arıyorum
+take_revenge,Взять реванш,Take revenge,İntikam almak
+change_foe,Сменить противника,Change the opponent,Rakibi değiştir
+next_route,Сменить трассу,Next route,Sonraki rota
+exit_track,Покинуть трассу,Leave the route,Rotayı terk et
+lang,Рус,Eng,Tur
+win,Победа!,Won!,Kazandın!
+loose,Поражение!,Defeat!,Yenilgi!
+tie,Ничья!,Tie!,Bağla şunu!
+restart_track,Повторный забег,Re-run,Yeniden çalıştır
+rating_title,Ваш рейтинг,Your rating,Puanınız
+ya_invitation,Войдите в аккаунт Яндекса,Login Yandex,Yandex'e giriş yap
+rewarded,"Посмотрите видео, чтобы открыть трассы, куда еще не ступала нога других игроков",Watch the video to discover tracks where no other players have set foot yet,Henüz başka hiçbir oyuncunun ayak basmadığı parçaları keşfetmek için videoyu izleyin

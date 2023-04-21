@@ -7,7 +7,7 @@ export var value : int = 1
 var label : Label3D
 
 func pickup():
-	SoundController.play_sfx(SoundController.Sfx.BONUS)
+	#SoundController.play_sfx(SoundController.Sfx.BONUS)
 	emit_signal("sig_picked_up", "counter", self)
 	return value
 

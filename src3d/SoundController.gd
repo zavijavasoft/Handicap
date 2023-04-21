@@ -1,7 +1,7 @@
 extends Node
 
-const MUSIC_PATHS = [
-	"res://sounds/music-theme.mp3",
+const  MUSIC_RESOURCES = [
+	preload("res://sounds/music-theme.mp3"),
 ]
 
 const SFX_RESOURCES = [
@@ -30,10 +30,8 @@ enum Sfx {
 
 var musicPlayer = AudioStreamPlayer.new()
 var sfxPlayer = AudioStreamPlayer.new()
-var musicResources = []
 
 func _init():
-	musicResources.append(load(MUSIC_PATHS[0]))
 	pass
 
 func _ready():
@@ -47,9 +45,11 @@ func on_sound_button_pressed(button_pressed):
 	G.soundOn = !button_pressed
 	G.musicOn = !button_pressed
 	if button_pressed:
-		SoundController.stop_music()
+		G.reach_goal("sound_off")
+		stop_music()
 	else:
-		SoundController.play_music()
+		G.reach_goal("sound_on")
+		play_music()
 	pass # Replace with function body.
 
 func play_sfx(sfx_id):
@@ -63,7 +63,7 @@ func play_music():
 		return
 		
 	if not musicPlayer.is_playing():
-		musicPlayer.stream = musicResources[0]
+		musicPlayer.stream = MUSIC_RESOURCES[0]
 		musicPlayer.play()
 	
 func stop_music():

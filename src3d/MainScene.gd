@@ -14,6 +14,7 @@ const Protagonist = preload("res://Protagonist.gd")
 const TrackExecutor = preload("res://TrackExecutor.gd")
 const FinishCurtain = preload("res://FinishCurtain.gd")
 
+
 const HERO_X_POS = -0.5
 const FOE_X_POS = -0.5
 const SIDE_WIDTH = 2
@@ -24,6 +25,7 @@ onready var hero = $Protagonist
 onready var foe = $Foe
 onready var camera = $Camera
 onready var pauseButton = $ControlPanel/ButtonPause
+onready var soundButton = $ControlPanel/ButtonSound
 onready var finishCurtain = $ControlPanel/FinishCurtain
 onready var waitingCurtain = $ControlPanel/WaitingCurtain
 onready var labelHeroScore = $ControlPanel/ScoreLineHero
@@ -33,6 +35,7 @@ onready var countDownTimer = $CountDownTimer
 onready var selectorLabel = $ControlPanel/WaitingCurtain/SelectorLabel
 onready var waitingLabel = $ControlPanel/WaitingCurtain/DotProgressLabel
 onready var waitingTimer = $WaitingTimer
+onready var progressBar = $ProgressBar
 
 
 var runVelocity = 8.0
@@ -51,20 +54,22 @@ var trackRecevied = true
 
 var generator : WorldGenerator
 
+
 func _init():
 	G.connect("sig_yandex_login", self, "on_authorized")
+	
 
 func _ready():
+	TranslationServer.set_locale(G.language)
+	selectorLabel.text = tr("looking_for")
 	state = SceneState.WAITING
-	generator = WorldGenerator.new(100)
+	generator = WorldGenerator.new(G.currentSeed)
 	hero.camera = camera
 
-	foe.zombify()
 	_on_Layout_Update()
-	if not G.soundOn:
-		$ControlPanel/ButtonSound.pressed = true
+	soundButton.pressed = not G.soundOn
+	SoundController.play_music()
 	pass
-
 
 func _physics_process(delta):
 	update_viewport_size()
@@ -84,9 +89,13 @@ func _physics_process(delta):
 				var runnerMode = Protagonist.RunnerMode.HERO
 				if G.foeTrack.empty():
 					foe.visible = false
+					foe.zombify()
 					G.foeRating = G.eloRating
 					runnerMode = Protagonist.RunnerMode.SINGLE
 					labelFoeScore.hide()
+				else:
+					foe.set_runner_mode(Protagonist.RunnerMode.FOE)
+					labelFoeScore.set_hero_name(G.foeName)
 				hero.set_runner_mode(runnerMode)
 				labelHeroScore.set_hero_name(G.userName)
 				pass
@@ -103,6 +112,7 @@ func _physics_process(delta):
 			trackExecutor.fake_physics_process(delta)
 			var shift = Vector3(0, 0, -runVelocity * delta)
 			allDistance += -shift.z
+			progressBar.update_progress(allDistance / (FRAGMENT_COUNT * 20))
 			hero.allDistance = allDistance
 			for fragment in wayFragments:
 				translate_way(fragment, shift)
@@ -113,6 +123,8 @@ func _physics_process(delta):
 			control_protagonist(foe, shift)
 
 func control_protagonist(protagonist, shift):
+	if protagonist.character == null:
+		return
 	if protagonist.is_dead():
 		match protagonist.deathReason:
 			0: 
@@ -134,10 +146,11 @@ func control_protagonist(protagonist, shift):
 
 func run_game():
 	state = SceneState.RUN
-	foe.run()
+	G.reach_goal("race_started")
 	hero.run()
 	trackExecutor = TrackExecutor.new()
 	if not G.foeTrack.empty():
+		foe.run()
 		hero.start_record(Protagonist.RunnerMode.HERO)
 		trackExecutor.start_execute(foe, G.foeTrack)
 	else:
@@ -168,6 +181,8 @@ func _input(event):
 
 func translate_way(way, shift):
 	way.translate(shift)
+	if way.translation.z < camera.far + 10:
+		generator.generate_obstacles(way)
 	for element in way.get_children() :
 		if not element is MeshInstance:
 			if element.global_translation.z < -1.5:
@@ -184,6 +199,8 @@ func _on_SwipeDetector_sig_swiped(direction):
 
 func _on_Level_Finished():
 	state = SceneState.FINISH
+	var foe_count = foe.score_count
+	var hero_count = hero.score_count
 	var mode = FinishCurtain.CurtainMode.WON
 	if hero.runnerMode != Protagonist.RunnerMode.SINGLE:
 		if hero.score_count < foe.score_count:
@@ -191,6 +208,7 @@ func _on_Level_Finished():
 			SoundController.play_sfx(SoundController.Sfx.LOSE)
 		elif hero.score_count == foe.score_count:
 			mode = FinishCurtain.CurtainMode.TIE
+	G.reach_goal("race_finished")
 	finishCurtain.show_in_mode(mode)
 	
 
@@ -201,7 +219,7 @@ func _on_Scored(isHero, score):
 		labelFoeScore.score(score)
 
 func final_dance_rotate(protagonist, delta):
-	if protagonist.rotation.y < -PI / 2:
+	if protagonist.rotation.y < -PI:
 		return
 	protagonist.rotate_y(-PI / 3 * delta)
 
@@ -214,6 +232,7 @@ func _on_Layout_Update():
 	var midVp = viewportSize.size.x / 2
 	waitingCurtain.set_position(Vector2(midVp - 512, 0))
 	finishCurtain.set_position(Vector2(midVp - 512, 0))
+	progressBar.set_position(Vector2(midVp - 512, 1880))
 	countDownLabel.set_position(Vector2(midVp - countDownLabel.get_rect().size.x / 2,
 										 countDownLabel.get_position().y))
 	pass
@@ -279,9 +298,17 @@ func upload_track(track):
 	elif G.winCount + G.tieCount < 30:
 		k = 40
 	
-	var Ea = 1 / (1 + 10 * ((G.foeRating - G.eloRating) / 400))
-	var newRating = ceil(G.eloRating + k * (Sa - Ea))
+	var Ea = 1 / (1 + pow(10, (G.foeRating - G.eloRating) / 400 ))
+	var revenge = G.lastRating > 0
+	G.lastRating = ceil(G.eloRating + k * (Sa - Ea))
 	
+	NetManager.uploadTrack(G.lastRating, G.currentSeed, 0, track)
 	
-	NetManager.uploadTrack(newRating, G.currentSeed, 0, track)
+	if not revenge:
+		G.eloRating = G.lastRating
+		if G.maxEloRating < G.eloRating or G.maxEloRating == null:
+			G.maxEloRating = G.eloRating
+			G.platformApi.set_leaderboard_entry(G.maxEloRating)
+		G.save_game()
+		G.lastRating = -1
 	pass

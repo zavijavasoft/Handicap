@@ -21,6 +21,7 @@ func run():
 	player.play("Running")
 
 func jump():
+	SoundController.play_sfx(SoundController.Sfx.JUMP)
 	player.play("Jumping")
 	isJumping = true
 
@@ -38,20 +39,19 @@ func respawn():
 
 func die(reason):
 	isDead = true
-	var soundId = SoundController.Sfx.WALL
 	match reason:
 		"PikeSetArea":
-			soundId = SoundController.Sfx.DEATH
+			SoundController.play_sfx(SoundController.Sfx.DEATH)
 			player.play("FallFlat")
 			return 0
 		"AbyssArea":
-			soundId = SoundController.Sfx.FALL
+			SoundController.play_sfx(SoundController.Sfx.FALL)
 			player.play("HeadOverHills")
 			return 2
 		_:
+			SoundController.play_sfx(SoundController.Sfx.WALL)
 			player.play("FallBack")
 			return 1
-	SoundController.play_sfx(soundId)
 	
 func play(animation):
 	player.play(animation)

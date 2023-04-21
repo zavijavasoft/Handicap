@@ -33,7 +33,17 @@ func findTrack(seed_ = 0):
 func uploadTrack(rating, seed_, mode, track):
 	var avatarString = ""
 	if G.avatarImage != null:
-		avatarString = Marshalls.raw_to_base64(G.avatarImage)
+		var tmpFileName = "temp.png"
+		var temp_file = File.new()
+		G.avatarImage.save_png(tmpFileName)
+		temp_file.open(tmpFileName, File.READ)
+		var file_data = temp_file.get_buffer(temp_file.get_len())
+		temp_file.close()
+		avatarString = Marshalls.raw_to_base64(file_data)
+		print("Base64 encoded avatar image:", avatarString)
+		var dir = Directory.new()
+		dir.remove(tmpFileName)
+
 	var message = {
 		user_id = G.get_user_unique_id(),
 		user_name = G.userName,
@@ -64,10 +74,12 @@ func _on_FindTrack_request_completed(result, response_code, headers, body):
 		if not avatarString.empty():
 			G.foeAvatarImage = Image.new()
 			var avatarData = Marshalls.base64_to_raw(avatarString)
-			var imageError = G.foeAvatarImage.load_jpg_from_buffer(avatarData)
+			var imageError = G.foeAvatarImage.load_png_from_buffer(avatarData)
 			if imageError != OK:
 				G.foeAvatarImage = null
 				print("An error occurred while trying to display the foe avatar.")
+			else:
+				print("Foe avatar loaded successfully")
 	else:
 		G.foeTrack = ""
 	G.trackLoadingPending = false

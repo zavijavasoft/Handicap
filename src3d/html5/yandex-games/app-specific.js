@@ -3,7 +3,7 @@ export const INTERNAL_APP_NAME = "Handlcap"
 export const YA_LOCAL_STORAGE_KEY_DATA  = INTERNAL_APP_NAME + ".yagames.data";
 export const YA_LOCAL_STORAGE_KEY_NUMERIC = INTERNAL_APP_NAME + ".yagames.numeric.data";
 export const YA_PREMIUM_PURCHASE_ID = INTERNAL_APP_NAME + "_premium_account";
-export const LEADERBOARD_NAME = "BestResults";
+export const LEADERBOARD_NAME = INTERNAL_APP_NAME + "Best";
 
 export function createDefaultStatsData() {
     return {
@@ -21,6 +21,7 @@ export function createDefaultGameData() {
         musicOn : true,
         tutorialDone : false,
         eloRating : 1000,
+        maxEloRating : 1000,
         playerLevel : 0, // 0 - 10
         winCount : 0,
         tieCount : 0,
@@ -33,7 +34,11 @@ export function createDefaultGameData() {
         achieveGoldStar : false , // for first 1000 wins
         achievePlatinumStar : false , // for first 5000 wins
         achieveNiobiumStar : false , // for first 10000 wins
-        achievePeaceMaker : false // for first 100 ties
+        achievePeaceMaker : false, // for first 100 ties
+        characterModelName : "Alyona",
+        firstRewardedSeed : 0,
+		secondRewardedSeed : 0,
+		thirdRewardedSeed : 0,
     };
 }
 
@@ -53,7 +58,8 @@ export function mixupGameData(local_data, remote_data) {
         musicOn: local_data.musicOn,
         soundOn: local_data.soundOn,
         tutorialDone: local_data.tutorialDone || remote_data.tutorialDone,
-        eloRating: Math.max(local_data.eloRating, eloRating.bestScore),
+        eloRating: Math.max(local_data.eloRating, remote_data.eloRating),
+        maxEloRating: Math.max(local_data.maxEloRating, remote_data.maxEloRating) || 1000,
         playerLevel: Math.max(local_data.playerLevel, remote_data.playerLevel),
         winCount: Math.max(local_data.winCount, remote_data.winCount),
         tieCount: Math.max(local_data.tieCount, remote_data.tieCount),
@@ -67,6 +73,9 @@ export function mixupGameData(local_data, remote_data) {
         achievePlatinumStar: local_data.achievePlatinumStar || remote_data.achievePlatinumStar,
         achieveNiobiumStar: local_data.achieveNiobiumStar || remote_data.achieveNiobiumStar,
         achievePeaceMaker: local_data.achievePeaceMaker || remote_data.achievePeaceMaker,
-  
+        characterModelName: local_data.characterModelName || remote_data.characterModelName || "Alyona",
+        firstRewardedSeed : local_data.firstRewardedSeed || remote_data.firstRewardedSeed || 0,
+		secondRewardedSeed : local_data.secondRewardedSeed || remote_data.secondRewardedSeed || 0,
+		thirdRewardedSeed : local_data.thirdRewardedSeed || remote_data.thirdRewardedSeed || 0,
     };
 }

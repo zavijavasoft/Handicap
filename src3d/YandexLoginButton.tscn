@@ -1,0 +1,61 @@
+[gd_scene load_steps=8 format=2]
+
+[ext_resource path="res://fonts/Explain.tres" type="DynamicFont" id=1]
+[ext_resource path="res://images/ya-games-button_result.png" type="Texture" id=2]
+[ext_resource path="res://images/ya-games-button-pressed.png" type="Texture" id=3]
+[ext_resource path="res://images/purple-streep.png" type="Texture" id=4]
+[ext_resource path="res://fonts/ButtonText.tres" type="DynamicFont" id=5]
+[ext_resource path="res://images/incognito_avatar.png" type="Texture" id=6]
+[ext_resource path="res://YandexLoginButton.gd" type="Script" id=7]
+
+[node name="YandexLoginButton" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource( 7 )
+
+[node name="BkGnd" type="Sprite" parent="."]
+scale = Vector2( 1.29496, 1 )
+texture = ExtResource( 4 )
+centered = false
+
+[node name="NoAuth" type="Control" parent="."]
+margin_right = 40.0
+margin_bottom = 40.0
+
+[node name="YaButton" type="TextureButton" parent="NoAuth"]
+margin_right = 799.0
+margin_bottom = 256.0
+rect_scale = Vector2( 0.5, 0.5 )
+texture_normal = ExtResource( 2 )
+texture_pressed = ExtResource( 3 )
+
+[node name="Label" type="Label" parent="NoAuth/YaButton"]
+margin_left = 257.0
+margin_right = 800.0
+margin_bottom = 256.0
+custom_fonts/font = ExtResource( 1 )
+text = "Войдите в аккаунт Яндекс,
+чтобы сохранить результаты"
+align = 1
+valign = 1
+autowrap = true
+
+[node name="Auth" type="Control" parent="."]
+visible = false
+margin_right = 40.0
+margin_bottom = 40.0
+
+[node name="Avatar" type="Sprite" parent="Auth"]
+texture = ExtResource( 6 )
+centered = false
+
+[node name="LoginName" type="Label" parent="Auth"]
+margin_left = 144.0
+margin_top = 28.0
+margin_right = 540.0
+margin_bottom = 88.0
+custom_fonts/font = ExtResource( 5 )
+text = "Incognito"
+clip_text = true
+
+[connection signal="pressed" from="NoAuth/YaButton" to="." method="_on_YaButton_pressed"]

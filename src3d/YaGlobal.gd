@@ -19,12 +19,13 @@ var bestScore : int = 0
 
 
 # VARS TO SERIALIZE
-var language = "ru"
+var language = "en"
 var userSelectedLanguage = ""
 var soundOn = true
 var musicOn = true
 var tutorialDone = false
 var eloRating = 1000
+var maxEloRating = 1000
 var playerLevel = 0 # 0 - 10
 var winCount = 0
 var tieCount = 0
@@ -38,6 +39,10 @@ var achieveGoldStar = false # for first 1000 wins
 var achievePlatinumStar = false # for first 5000 wins
 var achieveNiobiumStar = false # for first 10000 wins
 var achievePeaceMaker = false # for first 100 ties
+var characterModelName = "Alyona"
+var firstRewardedSeed = 0
+var secondRewardedSeed = 0
+var thirdRewardedSeed = 0
 
 # END VARS TO SERIALIZE
 
@@ -49,17 +54,26 @@ var avatarImage = null
 var avatarHTTPRequest = null
 
 var currentScene = null
-var currentProtagonist = "res://Alyona.tscn"
+
+var gameCharacters = ["Alyona", "Geralt"]
+var foeModelName = "Alyona"
+var currentProtagonist = "res://Geralt.tscn"
+
 
 var currentSeed = 100
 var lastTrack = ""
+var lastRating = -1
 var foeName = "IUnknown"
 var foeRating = 1000
 var foeAvatarImage = null
 var foeTrack = ""
 var trackLoadingPending = false
 
-var languages = ["ru", "en"]
+var languages = ["ru", "en", "tr"]
+
+var aliases = [
+	"Incognito", "Невидимка", "Unknown Player", "Гость", "Guest", "Неизвестный", "Агент 008"
+]
 
 func get_user_unique_id():
 	if userUniqueId.empty():
@@ -75,16 +89,17 @@ func _unhandled_key_input(event):
 func _init():
 	randomize()
 	rand_seed(OS.get_time().minute)
+	userName = aliases[randi() % 7]
 	avatarHTTPRequest = HTTPRequest.new()
 	pass
 	
 
 func _notification(what):
 	if what == MainLoop.NOTIFICATION_WM_FOCUS_OUT:
-		#stop_music()
+		SoundController.stop_music()
 		return
 	if what == MainLoop.NOTIFICATION_WM_FOCUS_IN:
-		#play_music()
+		SoundController.play_music()
 		return
 
 func _ready():
@@ -113,6 +128,9 @@ func notify_yandex_sdk_loaded():
 	pass
 
 func void_adv_callback(_adv_result):
+	var date = OS.get_date()
+	if date.year == 2023 and date.month == 4 and date.day < 22:
+		return
 	AdvManager.showBannerAdv()
 	pass
 
@@ -132,7 +150,7 @@ func _on_Avatar_request_completed(result, response_code, headers, body):
 	var image_error = avatarImage.load_jpg_from_buffer(body)
 	if image_error != OK:
 		avatarImage = null
-		print("An error occurred while trying to display the image.")
+		print("Loading Avatar: An error ", image_error ," occurred while trying to display the image.")
 	emit_signal("sig_yandex_login")
 
 func notify_update_game_data():
@@ -172,9 +190,31 @@ func reach_goal(goal):
 
 func serialize():
 	var save_dict = {
+		language = language,
+		userSelectedLanguage = userSelectedLanguage,
 		soundOn = soundOn,
 		musicOn = musicOn,
 		tutorialDone = tutorialDone,
+		eloRating = eloRating,
+		maxEloRating = maxEloRating,
+		playerLevel = playerLevel,
+		winCount = winCount,
+		tieCount = tieCount,
+		firstTracksCount = firstTracksCount,
+		achieveFirstBlood = achieveFirstBlood, # For first win
+		achieveFirstFriend = achieveFirstFriend, # for first tie
+		achievePioneer = achievePioneer, # for first 100 new seeds
+		achieveIronStar = achieveIronStar, # for first 100 wins
+		achieveSilverStar = achieveSilverStar, # for first 500 wins
+		achieveGoldStar = achieveGoldStar, # for first 1000 wins
+		achievePlatinumStar = achievePlatinumStar, # for first 5000 wins
+		achieveNiobiumStar = achieveNiobiumStar,# for first 10000 wins
+		achievePeaceMaker = achievePeaceMaker, # for first 100 ties
+		characterModelName = characterModelName,
+		firstRewardedSeed = firstRewardedSeed,
+		secondRewardedSeed = secondRewardedSeed,
+		thirdRewardedSeed = secondRewardedSeed
+
 	}
 	return to_json(save_dict)
 
@@ -182,8 +222,32 @@ func deserialize(gameData : String):
 	if not gameData:
 		return
 	var data = parse_json(gameData)
+	
 	tutorialDone = data["tutorialDone"]
-	pass
+	language = data["language"]
+	userSelectedLanguage = data["userSelectedLanguage"]
+	soundOn = data["soundOn"]
+	musicOn = data["musicOn"]
+	tutorialDone = data["tutorialDone"]
+	eloRating = data["eloRating"]
+	maxEloRating = data["maxEloRating"]
+	playerLevel = data["playerLevel"]
+	winCount = data["winCount"]
+	tieCount = data["tieCount"]
+	firstTracksCount = data["firstTracksCount"]
+	achieveFirstBlood = data["achieveFirstBlood"] # For first win
+	achieveFirstFriend = data["achieveFirstFriend"] # for first tie
+	achievePioneer = data["achievePioneer"] # for first 100 new seeds
+	achieveIronStar = data["achieveIronStar"] # for first 100 wins
+	achieveSilverStar = data["achieveSilverStar"] # for first 500 wins
+	achieveGoldStar = data["achieveGoldStar"] # for first 1000 wins
+	achievePlatinumStar = data["achievePlatinumStar"] # for first 5000 wins
+	achieveNiobiumStar = data["achieveNiobiumStar"]# for first 10000 wins
+	achievePeaceMaker = data["achievePeaceMaker"] # for first 100 tiespass
+	characterModelName = data["characterModelName"]
+	firstRewardedSeed = data["firstRewardedSeed"]
+	secondRewardedSeed = data["secondRewardedSeed"]
+	thirdRewardedSeed = data["secondRewardedSeed"]
 
 func deserialize_stats(gameStats : String):
 	var data = parse_json(gameStats)

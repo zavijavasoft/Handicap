@@ -55,7 +55,7 @@ func update_gate():
 	label3D.text = text
 		
 func pickup():
-	SoundController.play_sfx(SoundController.Sfx.GATE)
+	#musicPlayer.play_sfx(SoundController.Sfx.GATE)
 	$Cylinder002.hide()
 	
 func _ready():

@@ -48,19 +48,27 @@ config/name="Handicap3D"
 run/main_scene="res://StartScene.tscn"
 config/icon="res://icon.png"
 
+[audio]
+
+output_latency=10
+
 [autoload]
 
 YaVersion="*res://html5/yandex-games/YaVersion.gd"
 PApi="*res://html5/godot-yandex-games/PlatformApi.gd"
 AdvManager="*res://html5/godot-yandex-games/AdvManager.gd"
+SoundController="*res://SoundController.gd"
 G="*res://YaGlobal.gd"
 NetManager="*res://NetworkManager.gd"
-SoundController="*res://SoundController.gd"
+
+[debug]
+
+settings/physics_interpolation/enable_warnings=false
 
 [display]
 
 window/size/height=1920
-window/size/test_width=512
+window/size/test_width=540
 window/size/test_height=960
 window/handheld/orientation="portrait"
 window/stretch/mode="viewport"
@@ -80,7 +88,7 @@ pointing/emulate_touch_from_mouse=true
 
 [locale]
 
-translations=PoolStringArray( "res://translations/translations.en.translation", "res://translations/translations.ru.translation", "res://translations/translations.csv" )
+translations=PoolStringArray( "res://translations/translations.en.translation", "res://translations/translations.ru.translation", "res://translations/translations.tr.translation" )
 
 [physics]
 

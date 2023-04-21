@@ -10,6 +10,7 @@ const Gate = preload("res://Gate.gd")
 
 onready var timer = $Timer
 onready var nameLabel = $NameLabel
+var soundPlayer : SoundController
 
 var timerCount = 0
 
@@ -44,30 +45,50 @@ var isInvulnerable = false
 var trackRecorder : TrackRecorder = null
 
 func _ready():
-	var CharacterSc = load(G.currentProtagonist)
-	character = CharacterSc.instance() as Doll
-	add_child(character)
-	character.connect("sig_finished", get_parent(), "_on_Level_Finished")
 	connect("sig_scored", get_parent(), "_on_Scored")
 	pass
 
-func zombify():
-	$AreaHero.collision_mask = 2
-	$AreaHero.collision_layer = 2
-	nameLabel.text = G.foeName
-	emit_signal("sig_scored", false, 0)
-	pass
+func apply_character(charResource):
+	if character != null:
+		character.disconnect("sig_finished", get_parent(), "_on_Level_Finished")
+		remove_child(character)
+	var CharacterSc = load(charResource)
+	character = CharacterSc.instance() as Doll
+	add_child(character)
+	character.connect("sig_finished", get_parent(), "_on_Level_Finished")
 
+
+func zombify():
+	$AreaHero.collision_mask = 0
+	$AreaHero.collision_layer = 0
+	
 
 func set_runner_mode(mode):
-	emit_signal("sig_scored", true, 0)
+	var charResource
+	var sigFlag = true
 	nameLabel.text = G.userName
-	trackRecorder = TrackRecorder.new()
 	runnerMode = mode
-	if runnerMode == RunnerMode.SINGLE:
-		xPosition = SINGLE_X_POS
-	else:
-		xPosition = HERO_X_POS
+	match mode:
+		RunnerMode.SINGLE:
+			charResource = "res://" + G.characterModelName + ".tscn"
+			xPosition = SINGLE_X_POS
+			pass
+		RunnerMode.HERO:
+			charResource = "res://" + G.characterModelName + ".tscn"
+			xPosition = HERO_X_POS
+			pass
+		RunnerMode.FOE:
+			sigFlag = false
+			$AreaHero.collision_mask = 2
+			$AreaHero.collision_layer = 2
+			nameLabel.text = G.foeName
+			charResource = "res://" + G.foeModelName + ".tscn"
+			xPosition = FOE_X_POS
+			pass
+	apply_character(charResource)
+	emit_signal("sig_scored", sigFlag, 0)
+	if mode != RunnerMode.FOE:
+		trackRecorder = TrackRecorder.new()
 	translation.x = xPosition
 
 func start_record(mode):
@@ -186,16 +207,22 @@ func _on_AreaHero_area_entered(area):
 		if is_dead() or is_reborn() or isInvulnerable:
 			return
 		die(area.name)
+		var tax = 100 * floor(allTime / 10)
+		var after = clamp(score_count - tax, 0, score_count)
+		print("Tax : ", score_count, "," ,tax , ", ", after, ", ", allTime)
+		score(after)
 	elif area.name == "GateArea":
 		if is_dead() or is_reborn() or isInvulnerable:
 			return
 		var gate = area.get_parent()
+		SoundController.play_sfx(SoundController.Sfx.GATE)
 		gate.pickup()
 		var newValue = gate.change_score(score_count)
 		score(newValue)
 	elif area.name == "CounterArea":
 		if is_dead() or is_reborn() or isInvulnerable:
 			return
+		SoundController.play_sfx(SoundController.Sfx.BONUS)
 		var increment = area.get_parent().pickup()
 		if trackRecorder != null:
 			score(increment + score_count)
